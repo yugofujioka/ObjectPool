@@ -142,25 +142,26 @@ public class ObjectPool<T> where T : CachedBehaviour {
     
     // オブジェクトの生成
     // type : オブジェクトの種類
-    private T GenerateObject(int type) {
-        int index = this.objParams[type].genCount;
-        Object prefab = this.objParams[type].prefab;
-        Transform root = this.objParams[type].root;
+    private T GenerateObject<U>(U type) where U : struct {
+		int typeInt = type.GetHashCode();
+        int index = this.objParams[typeInt].genCount;
+        Object prefab = this.objParams[typeInt].prefab;
+        Transform root = this.objParams[typeInt].root;
     
         GameObject go = Object.Instantiate(prefab, root) as GameObject;
 #if UNITY_EDITOR
-        go.name = string.Format(this.objParams[type].prefab.name + "{0:D2}", this.objParams[type].genCount);
+        go.name = string.Format(this.objParams[typeInt].prefab.name + "{0:D2}", this.objParams[typeInt].genCount);
 #endif
         T obj = go.GetComponent<T>();
     
         // ユニークIDを割り振り
         obj.Create(UNIQUEID.Create(
             UNIQUEID.CATEGORYBIT(this.category) |
-            UNIQUEID.TYPEBIT(type) |
+            UNIQUEID.TYPEBIT(typeInt) |
             UNIQUEID.INDEXBIT(index)));
     
-        this.objList[type][index] = obj;
-        ++this.objParams[type].genCount;
+        this.objList[typeInt][index] = obj;
+        ++this.objParams[typeInt].genCount;
     
         return obj;
     }
@@ -181,9 +182,9 @@ public class ObjectPool<T> where T : CachedBehaviour {
     }
     // 種類別有効数取得
     // type : 種類
-    public int GetActiveCount(int type) {
-        return this.objParams[type].genCount -
-                (this.objParams[type].freeIndex + 1);
+    public int GetActiveCount<U>(U type) where U : struct {
+		int typeInt = type.GetHashCode();
+        return this.objParams[typeInt].genCount - (this.objParams[typeInt].freeIndex + 1);
     }
     // 全消去
     public void Clear() {
@@ -226,13 +227,14 @@ public class ObjectPool<T> where T : CachedBehaviour {
     // オブジェクト取り出し
     // type : 種類
     // obj : 取り出したオブジェクト
-    private bool PickOutObject(int type, out T obj) {
+    private bool PickOutObject<U>(U type, out T obj) where U : struct {
         obj = null;
     
         // 空きオブジェクトを取り出す
-        if (this.objParams[type].freeIndex >= 0) {
-            obj = this.objParams[type].pool[this.objParams[type].freeIndex];
-            --this.objParams[type].freeIndex;
+		int typeInt = type.GetHashCode();
+        if (this.objParams[typeInt].freeIndex >= 0) {
+            obj = this.objParams[typeInt].pool[this.objParams[typeInt].freeIndex];
+            --this.objParams[typeInt].freeIndex;
         } else {
             return false;
         }
