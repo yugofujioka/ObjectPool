@@ -38,7 +38,7 @@ public class Shooter : MonoBehaviour {
             Missile2D missile;
             // ※Transformキャッシュを本来はすべき
             Vector3 point = this.transform.localPosition;
-            if (this.pool.AwakeObject((int)this.nextType, point, out missile))
+            if (this.pool.AwakeObject(this.nextType, point, out missile))
                 missile.Ignition();
 
             // 上下左右と順番

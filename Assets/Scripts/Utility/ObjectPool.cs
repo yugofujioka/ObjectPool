@@ -195,14 +195,15 @@ public class ObjectPool<T> where T : CachedBehaviour {
     // localPosition : 生成座標
     // obj : 生成したオブジェクト
     // return : 呼び出しに成功
-    public bool AwakeObject(int type, Vector3 localPosition, out T obj) {
-        if (this.PickOutObject(type, out obj)) {
+    public bool AwakeObject<U>(U type, Vector3 localPosition, out T obj) where U : struct {
+        if (this.PickOutObject(type.GetHashCode(), out obj)) {
             int no = this.activeObjTask.count - 1;
             obj.WakeUp(no, localPosition);
             return true;
         }
         return false;
     }
+
     // オブジェクト取得
     // unique : ユニークID
     // obj : 対象オブジェクト
