@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
+using Unity.IL2CPP.CompilerServices;
+
 
 namespace TaskSystem {
     // true:継続, false:終了
     public delegate bool OrderHandler<T>(T obj, int no);
-	
+    
     // タスク管理
+    [Il2CppSetOption(Option.NullChecks, false), Il2CppSetOption(Option.ArrayBoundsChecks, false), Il2CppSetOption(Option.DivideByZeroChecks, false)]
     public sealed class TaskSystem<T> {
         private Task<T> top = null;    // 先端
         private Task<T> end = null;    // 終端

@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using TaskSystem;
+using Unity.IL2CPP.CompilerServices;
 
 
 // オブジェクトプール
+[Il2CppSetOption(Option.NullChecks, false), Il2CppSetOption(Option.ArrayBoundsChecks, false), Il2CppSetOption(Option.DivideByZeroChecks, false)]
 public class ObjectPool<T> where T : CachedBehaviour {
     // 各オブジェクトの共有設定
     private struct ObjectParam {
@@ -14,12 +16,12 @@ public class ObjectPool<T> where T : CachedBehaviour {
         public int genCount;        // 生成した数
     }
 
-    private int category = 0;                        // オブジェクトのカテゴリ
-    private int typeCount = 0;                       // オブジェクト種類数
-    private ObjectParam[] objParams = null;          // オブジェクト情報
-    private T[][] objList = null;                    // 全オブジェクトリスト
-    private TaskSystem<T> activeObjTask = null;// 稼動オブジェクトタスク
-    private int orderCount = 0;                      // 実行オブジェクト数
+    private int category = 0;                     // オブジェクトのカテゴリ
+    private int typeCount = 0;                    // オブジェクト種類数
+    private ObjectParam[] objParams = null;       // オブジェクト情報
+    private T[][] objList = null;                 // 全オブジェクトリスト
+    private TaskSystem<T> activeObjTask = null;   // 稼動オブジェクトタスク
+    private int orderCount = 0;                   // 実行オブジェクト数
     
     private float advanceTime = 0f; // procHandler経過時間
     // デリゲートキャッシュ
@@ -143,7 +145,7 @@ public class ObjectPool<T> where T : CachedBehaviour {
     // オブジェクトの生成
     // type : オブジェクトの種類
     private T GenerateObject<U>(U type) where U : struct {
-		int typeInt = type.GetHashCode();
+        int typeInt = type.GetHashCode();
         int index = this.objParams[typeInt].genCount;
         Object prefab = this.objParams[typeInt].prefab;
         Transform root = this.objParams[typeInt].root;
@@ -183,7 +185,7 @@ public class ObjectPool<T> where T : CachedBehaviour {
     // 種類別有効数取得
     // type : 種類
     public int GetActiveCount<U>(U type) where U : struct {
-		int typeInt = type.GetHashCode();
+        int typeInt = type.GetHashCode();
         return this.objParams[typeInt].genCount - (this.objParams[typeInt].freeIndex + 1);
     }
     // 全消去
@@ -231,7 +233,7 @@ public class ObjectPool<T> where T : CachedBehaviour {
         obj = null;
     
         // 空きオブジェクトを取り出す
-		int typeInt = type.GetHashCode();
+        int typeInt = type.GetHashCode();
         if (this.objParams[typeInt].freeIndex >= 0) {
             obj = this.objParams[typeInt].pool[this.objParams[typeInt].freeIndex];
             --this.objParams[typeInt].freeIndex;

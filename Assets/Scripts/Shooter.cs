@@ -20,6 +20,7 @@ public class Shooter : MonoBehaviour {
     public void OnDestroy() {
         this.pool.Final();
     }
+		FrameTiming[] frameTimings = new FrameTiming[1];
     public void Update() {
         // スペースキーで一括回収
         if (Input.GetKeyDown(KeyCode.Space))
